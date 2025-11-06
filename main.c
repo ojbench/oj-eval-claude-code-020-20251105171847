@@ -125,13 +125,21 @@ int main() {
              pgIdx += 2, q = q + 1024 * 4 * 2) {
             ret = return_pages(q);
             freeCnt += 1;
-            dotOk(query_page_counts(1) == freeCnt);
+            int query_result = query_page_counts(1);
+            if (pgIdx < 4) {  // Debug first few iterations
+                printf("Debug: freed page at %p, freeCnt=%d, query_page_counts(1)=%d\n", q, freeCnt, query_result);
+            }
+            dotOk(query_result == freeCnt);
         }
         q = p + 1024 * 4;
         for (pgIdx = 0; pgIdx < MAXRANK0PAGE; pgIdx += 2, q = q + 1024 * 4 * 2) {
             ret = return_pages(q);
             freeCnt -= 1;
-            dotOk(query_page_counts(1) == freeCnt);
+            int query_result = query_page_counts(1);
+            if (pgIdx < 4) {  // Debug first few iterations
+                printf("Debug: freed page at %p, freeCnt=%d, query_page_counts(1)=%d\n", q, freeCnt, query_result);
+            }
+            dotOk(query_result == freeCnt);
         }
         dotOk(query_page_counts(MAXRANK) != 0);
         dotDone();
