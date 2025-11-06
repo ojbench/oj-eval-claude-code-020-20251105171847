@@ -220,6 +220,7 @@ void *alloc_pages(int rank) {
 }
 
 int return_pages(void *p) {
+    // Safety check for NULL pointer
     if (!p) {
         return -EINVAL;
     }
@@ -311,9 +312,18 @@ int query_page_counts(int rank) {
     int count = 0;
     free_block_t *block = free_lists[rank].next;
 
-    while (block != &free_lists[rank]) {
+    // Safety check: make sure we have a valid circular list
+    if (!block) {
+        return 0;
+    }
+
+    int max_iterations = 10000; // Prevent infinite loops
+    int iterations = 0;
+
+    while (block != &free_lists[rank] && iterations < max_iterations) {
         count++;
         block = block->next;
+        iterations++;
     }
 
     return count;
